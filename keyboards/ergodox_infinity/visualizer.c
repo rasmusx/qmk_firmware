@@ -99,19 +99,19 @@ static keyframe_animation_t two_led_colors = {
 
 // The LCD animation alternates between the layer name display and a
 // bitmap that displays all active layers
-static keyframe_animation_t lcd_bitmap_animation = {
-    .num_frames = 1,
-    .loop = false,
-    .frame_lengths = {gfxMillisecondsToTicks(0)},
-    .frame_functions = {lcd_keyframe_display_layer_bitmap},
-};
+//static keyframe_animation_t lcd_bitmap_animation = {
+//    .num_frames = 1,
+//    .loop = false,
+//    .frame_lengths = {gfxMillisecondsToTicks(0)},
+//    .frame_functions = {lcd_keyframe_display_layer_bitmap},
+//};
 
-static keyframe_animation_t lcd_bitmap_leds_animation = {
-    .num_frames = 2,
-    .loop = true,
-    .frame_lengths = {gfxMillisecondsToTicks(2000), gfxMillisecondsToTicks(2000)},
-    .frame_functions = {lcd_keyframe_display_layer_bitmap, lcd_keyframe_display_led_states},
-};
+//static keyframe_animation_t lcd_bitmap_leds_animation = {
+//    .num_frames = 2,
+//    .loop = true,
+//    .frame_lengths = {gfxMillisecondsToTicks(2000), gfxMillisecondsToTicks(2000)},
+//    .frame_functions = {lcd_keyframe_display_layer_bitmap, lcd_keyframe_display_led_states},
+//};
 
 void initialize_user_visualizer(visualizer_state_t* state) {
     // The brightness will be dynamically adjustable in the future
@@ -218,32 +218,6 @@ static void update_emulated_leds(visualizer_state_t* state, visualizer_keyboard_
 }
 
 static void update_lcd_text(visualizer_state_t* state, visualizer_keyboard_status_t* prev_status) {
-    if (state->status.leds) {
-        if (lcd_state != LCD_STATE_BITMAP_AND_LEDS ||
-                state->status.leds != prev_status->leds ||
-                state->status.layer != prev_status->layer ||
-                state->status.default_layer != prev_status->default_layer) {
-
-            // NOTE: that it doesn't matter if the animation isn't playing, stop will do nothing in that case
-            stop_keyframe_animation(&lcd_bitmap_animation);
-
-            lcd_state = LCD_STATE_BITMAP_AND_LEDS;
-            // For information:
-            // The logic in this function makes sure that this doesn't happen, but if you call start on an
-            // animation that is already playing it will be restarted.
-            start_keyframe_animation(&lcd_bitmap_leds_animation);
-        }
-    } else {
-        if (lcd_state != LCD_STATE_LAYER_BITMAP ||
-                state->status.layer != prev_status->layer ||
-                state->status.default_layer != prev_status->default_layer) {
-
-            stop_keyframe_animation(&lcd_bitmap_leds_animation);
-
-            lcd_state = LCD_STATE_LAYER_BITMAP;
-            start_keyframe_animation(&lcd_bitmap_animation);
-        }
-    }
 }
 
 void update_user_visualizer_state(visualizer_state_t* state, visualizer_keyboard_status_t* prev_status) {

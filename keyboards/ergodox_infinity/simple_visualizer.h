@@ -68,7 +68,7 @@ void initialize_user_visualizer(visualizer_state_t* state) {
     state->current_lcd_color = initial_color;
     state->target_lcd_color = logo_background_color;
     initial_update = true;
-    start_keyframe_animation(&default_startup_animation);
+//    start_keyframe_animation(&default_startup_animation);
 }
 
 
@@ -110,14 +110,14 @@ void user_visualizer_suspend(visualizer_state_t* state) {
     uint8_t hue = LCD_HUE(state->current_lcd_color);
     uint8_t sat = LCD_SAT(state->current_lcd_color);
     state->target_lcd_color = LCD_COLOR(hue, sat, 0);
-    start_keyframe_animation(&default_suspend_animation);
+    //start_keyframe_animation(&default_suspend_animation);
 }
 
 void user_visualizer_resume(visualizer_state_t* state) {
     state->current_lcd_color = initial_color;
     state->target_lcd_color = logo_background_color;
     initial_update = true;
-    start_keyframe_animation(&default_startup_animation);
+  //  start_keyframe_animation(&default_startup_animation);
 }
 
 #endif /* KEYBOARDS_ERGODOX_INFINITY_SIMPLE_VISUALIZER_H_ */
