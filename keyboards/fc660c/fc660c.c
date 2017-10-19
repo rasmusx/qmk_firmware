@@ -43,6 +43,7 @@ inline uint8_t matrix_cols(void) {
 
 void matrix_init(void) {
 #ifdef DEBUG
+    debug_enable=true
     debug_enable = true;
     debug_keyboard = true;
 #endif
