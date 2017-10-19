@@ -24,9 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define VENDOR_ID       0xFEED
 #define PRODUCT_ID      0x660C
 #define DEVICE_VER      0x0100
-#define MANUFACTURER    You
-#define PRODUCT         FC660C
-#define DESCRIPTION     A custom keyboard
+#define MANUFACTURER    TMK.
+#define PRODUCT         FC660C Alt Controller
+#define DESCRIPTION     QMK. keyboard firmware for FC660C
 
 /* key matrix size */
 #define MATRIX_ROWS 8
