@@ -114,13 +114,135 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt) {
     return MACRO_NONE;
 };
 
+uint8_t key2asc(uint8_t key)
+{
+    switch (key) {
+        case KC_A: return 'a';
+        case KC_B: return 'b';
+        case KC_C: return 'c';
+        case KC_D: return 'd';
+        case KC_E: return 'e';
+        case KC_F: return 'f';
+        case KC_G: return 'g';
+        case KC_H: return 'h';
+        case KC_I: return 'i';
+        case KC_J: return 'j';
+        case KC_K: return 'k';
+        case KC_L: return 'l';
+        case KC_M: return 'm';
+        case KC_N: return 'n';
+        case KC_O: return 'o';
+        case KC_P: return 'p';
+        case KC_Q: return 'q';
+        case KC_R: return 'r';
+        case KC_S: return 's';
+        case KC_T: return 't';
+        case KC_U: return 'u';
+        case KC_V: return 'v';
+        case KC_W: return 'w';
+        case KC_X: return 'x';
+        case KC_Y: return 'y';
+        case KC_Z: return 'z';
+        case KC_1: return '1';
+        case KC_2: return '2';
+        case KC_3: return '3';
+        case KC_4: return '4';
+        case KC_5: return '5';
+        case KC_6: return '6';
+        case KC_7: return '7';
+        case KC_8: return '8';
+        case KC_9: return '9';
+        case KC_0: return '0';
+        case KC_ENTER: return '\n';
+        case KC_ESCAPE: return 0x1B;
+        case KC_BSPACE: return '\b';
+        case KC_TAB: return '\t';
+        case KC_SPACE: return ' ';
+        case KC_MINUS: return '-';
+        case KC_EQUAL: return '=';
+        case KC_LBRACKET: return '[';
+        case KC_RBRACKET: return ']';
+        case KC_BSLASH: return '\\';
+        case KC_NONUS_HASH: return '\\';
+        case KC_SCOLON: return ';';
+        case KC_QUOTE: return '\'';
+        case KC_GRAVE: return '`';
+        case KC_COMMA: return ',';
+        case KC_DOT: return '.';
+        case KC_SLASH: return '/';
+        default: return 0x00;
+    }
+}
+
+struct Stack {
+  char T[10];
+  char Z[10];
+  char Y[10];
+  char X[10];
+};
+
+struct Stack stack;
+
+bool calculator = false;
+char val[1];
+float x,y;
+bool calcdone = false;
+
+#include <ctype.h>
+#include <stdlib.h>
+
+char output[50];
+
+void print_stack(void) {
+  xprintf("\n STACK --- x:%s y:%s z:%s t: %s\n",stack.X, stack.Y, stack.Z, stack.T);
+}
+
+void calc_on(void) {
+  calculator = true;
+}
+
+void calc_off(void) {
+  calculator = false;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
-        switch(keycode) {
-            case TESTING:
-                SEND_STRING("A" SS_WAIT(1000) "OK");
-                return false; break;
+      // check if calc mode
+      if (false) {
+        val[0] = key2asc(keycode);
+        if (isdigit(val[0]) || val[0] == '.') {
+          if (calcdone) {
+            strcat(stack.Y, stack.X);
+            memset(stack.X, 0, sizeof(stack.X));
+            calcdone = false;
+          }
+          if (strlen(stack.X) < sizeof(stack.X)) {
+            strcat(stack.X, val);
+          } else {
+            xprintf("%s || %s\n", "TOO BIG BUFFER", stack.X);
+          }
         }
+        switch (keycode) {
+          case KC_ENTER:
+            strcpy(stack.Y, stack.X);
+            print_stack();
+            memset(stack.X, 0, sizeof(stack.X));
+            print_stack();
+            break;
+          case KC_EQUAL:
+            print_stack();
+            x = atof(stack.X);
+            y = atof(stack.Y);
+            float u = x+y;
+            snprintf(output, 50, "%f", u);
+            xprintf("\nresults: %s\n", output);
+            strcpy(stack.X, output);
+            memset(stack.Y, 0, sizeof(stack.Y));
+            print_stack();
+            calcdone = true;
+            break;
+        }
+      }
     }
     return true;
 };
