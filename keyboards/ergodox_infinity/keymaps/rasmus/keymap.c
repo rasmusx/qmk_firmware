@@ -2,22 +2,34 @@
 #include "debug.h"
 #include "action_layer.h"
 #include "version.h"
+#include "ergodox_infinity.h"
 
 #define BASE 0 // default layer
 #define FL1 1 // symbols
-#define FL2 2 // media keys
+#define GAME 2 // media keys
+#define ESDF 3 // media keys
+#define CALCU 4 // media keys
 
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // can always be here
   EPRM,
   VRSN,
   RGB_SLD,
+  CALC,
+  C_0,
+  C_1,
+  C_2,
+  C_3,
+  C_4,
+  C_5,
+  C_6,
+  C_7,
+  C_8,
+  C_9,
 };
 
 enum macro_id {
   SHRUG,
-  FAST,
-  FLIP,
 };
 
 #define TYPE_SHRUG MACRO( \
@@ -74,7 +86,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         MO(FL1),KC_A,   KC_S,   KC_D,   KC_F,   KC_G,
         KC_LSFT,KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   KC_BSLS,
         KC_LCTL,KC_HOME,KC_END ,KC_LALT,KC_LGUI,
-                                        KC_INS, KC_PSCR,
+                                        KC_INS, TG(GAME),
                                                         KC_DEL,
                                         KC_SPC, KC_BSPC,KC_ESC,
 
@@ -82,9 +94,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
              KC_MINS,KC_6,   KC_7,   KC_8,   KC_9   ,KC_0  , KC_EQL,
              KC_RBRC,KC_Y,   KC_U,   KC_I,   KC_O,   KC_P,   KC_BSLS,
                      KC_H,   KC_J,   KC_K,   KC_L,   KC_SCLN,KC_QUOT,
-             M(SHRUG),  KC_N,   KC_M,   KC_COMM,KC_DOT, KC_SLSH,KC_RSFT,
+             M(SHRUG),KC_N,   KC_M,   KC_COMM,KC_DOT, KC_SLSH,KC_RSFT,
                              KC_RGUI,KC_RALT,KC_DEL ,KC_INS ,KC_RCTL,
-             KC_CALC,        KC_ESC,
+             KC_INS,        KC_LOCK,
              KC_PGUP,
              KC_PGDN,MO(FL1),KC_ENT
     ),
@@ -117,7 +129,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
        KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
           EPRM,KC_TRNS, KC_TRNS,KC_TRNS,KC_TRNS,
-                                       KC_TRNS,KC_TRNS,
+                                       KC_TRNS,RESET,
                                                KC_TRNS,
                                KC_TRNS,KC_TRNS,KC_TRNS,
        // right hand
@@ -126,9 +138,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                 KC_LEFT, KC_DOWN,KC_UP  , KC_RIGHT,KC_TRNS, KC_TRNS,
        KC_TRNS, KC_TRNS, KC_TRNS,KC_TRNS, KC_TRNS, KC_PGUP, KC_TRNS,
                          KC_TRNS,KC_TRNS, KC_HOME, KC_PGDN, KC_END,
-       KC_TRNS,   KC_TRNS,
-       KC_TRNS,
-       KC_TRNS, KC_TRNS, KC_TRNS
+       RESET,   KC_TRNS,
+       CALC,
+       TG(CALCU), KC_TRNS, KC_TRNS
 ),
 /* Keymap 2: Media and mouse keys
  *
@@ -152,22 +164,88 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                                 `--------------------'       `--------------------'
  */
 // MEDIA AND MOUSE
-[FL2] = LAYOUT_ergodox(
+//[FL2] = LAYOUT_ergodox(
+//       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+//       KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_U, KC_TRNS, KC_TRNS, KC_TRNS,
+//       KC_CAPS, KC_TRNS, KC_MS_L, KC_MS_D, KC_MS_R, KC_TRNS,
+//       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+//       EPRM,    KC_APP,  KC_TRNS, KC_BTN1, KC_BTN2,
+//                                           KC_TRNS, KC_TRNS,
+//                                                    KC_TRNS,
+//                                  KC_TRNS, KC_TRNS, KC_TRNS,
+//    // right hand
+//       KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+//       KC_TRNS,  KC_TRNS, KC_MPRV, KC_MPLY, KC_MNXT, KC_TRNS, KC_TRNS,
+//                 KC_TRNS, KC_VOLD, KC_MUTE, KC_VOLU, KC_TRNS, KC_TRNS,
+//       KC_TRNS,  KC_TRNS, KC_TRNS, KC_MSTP, KC_TRNS, KC_TRNS, KC_TRNS,
+//                          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+//       RESET,   KC_TRNS,
+//       KC_TRNS,
+//       KC_TRNS, KC_TRNS, KC_TRNS
+//),
+// MEDIA AND MOUSE
+[GAME] = LAYOUT_ergodox(
        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-       KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_U, KC_TRNS, KC_TRNS, KC_TRNS,
-       KC_CAPS, KC_TRNS, KC_MS_L, KC_MS_D, KC_MS_R, KC_TRNS,
        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-       EPRM,    KC_APP,  KC_TRNS, KC_BTN1, KC_BTN2,
+       KC_CAPS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
                                            KC_TRNS, KC_TRNS,
                                                     KC_TRNS,
                                   KC_TRNS, KC_TRNS, KC_TRNS,
     // right hand
        KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-       KC_TRNS,  KC_TRNS, KC_MPRV, KC_MPLY, KC_MNXT, KC_TRNS, KC_TRNS,
-                 KC_TRNS, KC_VOLD, KC_MUTE, KC_VOLU, KC_TRNS, KC_TRNS,
-       KC_TRNS,  KC_TRNS, KC_TRNS, KC_MSTP, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+                 KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
                           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-       RESET,   KC_TRNS,
+       TG(ESDF),  KC_TRNS,
+       KC_TRNS,
+       KC_TRNS, KC_TRNS, KC_TRNS
+),
+[ESDF] = LAYOUT_ergodox(
+       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS, KC_T,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_TRNS,
+       KC_TRNS, KC_G,    KC_A,    KC_S,    KC_D,    KC_F,
+       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+                                           KC_TRNS, KC_TRNS,
+                                                    KC_TRNS,
+                                  KC_TRNS, KC_TRNS, KC_TRNS,
+    // right hand
+       KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS,  KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,
+                 KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,
+       KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+                          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS,  KC_TRNS,
+       KC_TRNS,
+       KC_TRNS, KC_TRNS, KC_TRNS
+),
+[CALCU] = LAYOUT_ergodox(
+       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+                                           KC_TRNS, KC_TRNS,
+                                                    KC_TRNS,
+                                  KC_TRNS, KC_TRNS, KC_TRNS,
+    // right hand
+       //KC_TRNS,  KC_TRNS, KC_P7  , KC_P8  , KC_P9  , KC_PSLS, KC_TRNS,
+       //KC_TRNS,  KC_TRNS, KC_P4  , KC_P5  , KC_P6  , KC_PAST, KC_TRNS,
+       //          KC_TRNS, KC_P1  , KC_P2  , KC_P3  , KC_PMNS, KC_TRNS,
+       //KC_TRNS,  KC_TRNS, KC_P0  , KC_PDOT, KC_PENT, KC_PPLS, KC_TRNS,
+       //                   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       //KC_TRNS,  KC_TRNS,
+       //KC_TRNS,
+       //KC_TRNS, KC_TRNS, KC_TRNS
+       KC_TRNS,  KC_TRNS, C_7  , C_8  , C_9  , KC_PSLS, KC_TRNS,
+       KC_TRNS,  KC_TRNS, C_4  , C_5  , C_6  , KC_PAST, KC_TRNS,
+                 KC_TRNS, C_1  , C_2  , C_3  , KC_PMNS, KC_TRNS,
+       KC_TRNS,  KC_TRNS, C_0  , KC_TRNS, KC_TRNS, KC_PPLS, KC_TRNS,
+                          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS,  KC_TRNS,
        KC_TRNS,
        KC_TRNS, KC_TRNS, KC_TRNS
 ),
@@ -211,6 +289,38 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+    //case CALC:
+    //  calc_on();
+    //case C_0:
+    //  calc_add('0');
+    //  return false;
+    //case C_1:
+    //  calc_add('1');
+    //  return false;
+    //case C_2:
+    //  calc_add('2');
+    //  return false;
+    //case C_3:
+    //  calc_add('3');
+    //  return false;
+    //case C_4:
+    //  calc_add('4');
+    //  return false;
+    //case C_5:
+    //  calc_add('5');
+    //  return false;
+    //case C_6:
+    //  calc_add('6');
+    //  return false;
+    //case C_7:
+    //  calc_add('7');
+    //  return false;
+    //case C_8:
+    //  calc_add('8');
+    //  return false;
+    //case C_9:
+    //  calc_add('9');
+    //  return false;
   }
   return true;
 }
@@ -235,8 +345,11 @@ void matrix_scan_user(void) {
         case 1:
             ergodox_right_led_1_on();
             break;
-        case 2:
+        case GAME:
             ergodox_right_led_2_on();
+            break;
+        case CALCU:
+            ergodox_right_led_3_on();
             break;
         default:
             // none
@@ -244,3 +357,4 @@ void matrix_scan_user(void) {
     }
 
 };
+
