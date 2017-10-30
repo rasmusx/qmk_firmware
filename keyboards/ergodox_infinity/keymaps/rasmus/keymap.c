@@ -3,6 +3,7 @@
 #include "action_layer.h"
 #include "version.h"
 #include "ergodox_infinity.h"
+#include "calc.h"
 
 #define BASE 0 // default layer
 #define FL1 1 // symbols
@@ -96,7 +97,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                      KC_H,   KC_J,   KC_K,   KC_L,   KC_SCLN,KC_QUOT,
              M(SHRUG),KC_N,   KC_M,   KC_COMM,KC_DOT, KC_SLSH,KC_RSFT,
                              KC_RGUI,KC_RALT,KC_DEL ,KC_INS ,KC_RCTL,
-             KC_INS,        KC_LOCK,
+             TG(CALCU),        KC_LOCK,
              KC_PGUP,
              KC_PGDN,MO(FL1),KC_ENT
     ),
@@ -139,7 +140,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        KC_TRNS, KC_TRNS, KC_TRNS,KC_TRNS, KC_TRNS, KC_PGUP, KC_TRNS,
                          KC_TRNS,KC_TRNS, KC_HOME, KC_PGDN, KC_END,
        RESET,   KC_TRNS,
-       CALC,
+       KC_TRNS,
        TG(CALCU), KC_TRNS, KC_TRNS
 ),
 /* Keymap 2: Media and mouse keys
@@ -289,38 +290,71 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-    //case CALC:
-    //  calc_on();
-    //case C_0:
-    //  calc_add('0');
-    //  return false;
-    //case C_1:
-    //  calc_add('1');
-    //  return false;
-    //case C_2:
-    //  calc_add('2');
-    //  return false;
-    //case C_3:
-    //  calc_add('3');
-    //  return false;
-    //case C_4:
-    //  calc_add('4');
-    //  return false;
-    //case C_5:
-    //  calc_add('5');
-    //  return false;
-    //case C_6:
-    //  calc_add('6');
-    //  return false;
-    //case C_7:
-    //  calc_add('7');
-    //  return false;
-    //case C_8:
-    //  calc_add('8');
-    //  return false;
-    //case C_9:
-    //  calc_add('9');
-    //  return false;
+    case CALC:
+    //  layer_on(CALCU);
+      //calc_on();
+    case C_0:
+      if (record->event.pressed) {
+        calc_add('0');
+      }
+      return false;
+      break;
+    case C_1:
+      if (record->event.pressed) {
+        calc_add('1');
+      }
+      return false;
+      break;
+    case C_2:
+      if (record->event.pressed) {
+        calc_add('2');
+      }
+      return false;
+      break;
+    case C_3:
+      if (record->event.pressed) {
+        calc_add('3');
+      }
+      return false;
+      break;
+    case C_4:
+      if (record->event.pressed) {
+        calc_add('4');
+      }
+      return false;
+      break;
+    case C_5:
+      if (record->event.pressed) {
+        calc_add('5');
+      }
+      return false;
+      break;
+    case C_6:
+      if (record->event.pressed) {
+        calc_add('6');
+      }
+      return false;
+      break;
+    case C_7:
+      if (record->event.pressed) {
+        calc_add('7');
+      ergodox_right_led_1_on();
+      }
+      return false;
+      break;
+    case C_8:
+      if (record->event.pressed) {
+        calc_add('8');
+      ergodox_right_led_2_on();
+      }
+      return false;
+      break;
+    case C_9:
+      if (record->event.pressed) {
+        calc_add('9');
+      }
+      return false;
+      break;
   }
   return true;
 }
@@ -348,9 +382,9 @@ void matrix_scan_user(void) {
         case GAME:
             ergodox_right_led_2_on();
             break;
-        case CALCU:
-            ergodox_right_led_3_on();
-            break;
+        //case CALCU:
+        //    ergodox_right_led_3_on();
+        //    break;
         default:
             // none
             break;

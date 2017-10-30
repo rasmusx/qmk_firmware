@@ -30,6 +30,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "led_backlight_keyframes.h"
 #include "led.h"
 #include "visualizer_keyframes.h"
+#include "system/serial_link.h"
+#include "ergodox_infinity.h"
+#include "string.h"
+
+typedef struct {
+  const char* test;
+} visualizer_user_data_t;
+
+static visualizer_user_data_t user_data_keyboard = {
+  .test = ""
+};
 
 const uint8_t logo_doge[512] = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
@@ -73,6 +84,12 @@ bool rlogo(keyframe_animation_t* animation, visualizer_state_t* state) {
 
     gdispClear(White);
     gdispGBlitArea(GDISP, 0, 0, LCD_WIDTH, LCD_HEIGHT, 0, 0, LCD_WIDTH, (pixel_t*)logo_doge);
+    
+    if (is_serial_link_master()) {
+      gdispDrawString(60, 0, "wow", state->font_fixed5x8, Black);
+    } else {
+      gdispDrawString(60, 0, "o_O", state->font_fixed5x8, Black);
+    }
 
     return false;
 }
@@ -90,6 +107,7 @@ keyframe_animation_t startup_animationr = {
 //static const uint32_t initial_color = LCD_COLOR(230, 0, 100);
 //static const uint32_t initial_color = LCD_COLOR(255, 255, 255);
 static const uint32_t initial_color = LCD_COLOR(0x00, 0x00, 0xFF);
+bool initialized = false;
 
 void initialize_user_visualizer(visualizer_state_t* state) {
     gdispSetPowerMode(powerOn);
@@ -99,6 +117,7 @@ void initialize_user_visualizer(visualizer_state_t* state) {
             LCD_HUE(state->current_lcd_color),
             LCD_SAT(state->current_lcd_color),
             LCD_INT(state->current_lcd_color));
+    initialized = true;
     start_keyframe_animation(&startup_animationr);
 }
 
@@ -115,35 +134,91 @@ static keyframe_animation_t color_animation = {
     .frame_functions = {keyframe_no_operation, lcd_backlight_keyframe_animate_color},
 };
 
+bool draw_calc(keyframe_animation_t* animation, visualizer_state_t* state) {
+    (void)state;
+    (void)animation;
+
+    gdispClear(White);
+    gdispDrawString(0, 0, user_data_keyboard.test, state->font_fixed5x8, Black);
+
+    return false;
+}
+
+static keyframe_animation_t show_calc = {
+    .num_frames = 1,
+    .loop = false,
+    .frame_lengths = {0},
+    .frame_functions = {draw_calc},
+};
+
+bool calculator_on = false;
+void calc_on(void) {
+};
+
+char x[] = { '\0' };
+void calc_add(char c) {
+//  print((char *)user_data_keyboard.test);
+//  print("\n");
+  char y[2] = {c, '\0'};
+  strcat(x, y);
+  user_data_keyboard.test = x;
+  visualizer_set_user_data(&user_data_keyboard);
+//  print((char *)user_data_keyboard.test);
+//  print("\n");
+//  print("\n");
+  calculator_on = true;
+//  start_keyframe_animation(&show_calc);
+}
+
+
 static void get_visualizer_layer_and_color(visualizer_state_t* state) {
     uint8_t saturation = 60;
-    if (state->status.leds & (1u << USB_LED_CAPS_LOCK)) {
-        saturation = 255;
+    if (is_serial_link_master()) {
+        saturation = 200;
     }
+    //if (state->status.leds & (1u << USB_LED_CAPS_LOCK)) {
+    //    saturation = 255;
+    //}
 
     if (state->status.layer & 0x4) {
         state->target_lcd_color = LCD_COLOR(0, saturation, 0xFF);
-        state->layer_text = "Media";
     }
     else if (state->status.layer & 0x2) {
         state->target_lcd_color = LCD_COLOR(168, saturation, 0xFF);
-        state->layer_text = "Symbols";
+    }
+    else if (state->status.layer & 0x6) {
+        state->target_lcd_color = LCD_COLOR(100, saturation, 0xFF);
     }
     else {
         state->target_lcd_color = LCD_COLOR(84, saturation, 0xFF);
-        state->layer_text = "Base";
     }
 }
-
-typedef struct {
-} visualizer_user_data_t;
 
 void update_user_visualizer_state(visualizer_state_t* state, visualizer_keyboard_status_t* prev_status) {
     uint32_t prev_color = state->target_lcd_color;
 
+//    visualizer_user_data_t* user_data_new = (visualizer_user_data_t*)state->status.user_data;
+//    visualizer_user_data_t* user_data_old = (visualizer_user_data_t*)prev_status->user_data;
+
+    print("update\n");
+//    if (user_data_new->test != user_data_old->test) {
+//      print("NOT SAME\n");
+//    }
+//
+//
     get_visualizer_layer_and_color(state);
+
+    if (initialized) {
+        start_keyframe_animation(&startup_animationr);
+        initialized = false;
+    }
 
     if (prev_color != state->target_lcd_color) {
         start_keyframe_animation(&color_animation);
+    }
+
+    if (calculator_on) {
+        start_keyframe_animation(&show_calc);
+        calculator_on = false;
     }
 }

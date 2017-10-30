@@ -1,1 +1,3 @@
 KEY_LOCK_ENABLE = yes
+CONSOLE = yes
+COMMAND = yes
