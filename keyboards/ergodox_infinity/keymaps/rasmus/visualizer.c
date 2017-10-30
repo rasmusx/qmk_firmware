@@ -26,17 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #error This visualizer needs that LCD is enabled
 #endif
 
-#include "led_backlight_keyframes.h"
-//#include "visualizer.h"
-#include "visualizer_keyframes.h"
-//#include "lcd_keyframes.h"
 #include "lcd_backlight_keyframes.h"
-//#include "system/serial_link.h"
+#include "led_backlight_keyframes.h"
 #include "led.h"
-//#include "default_animations.h"
+#include "visualizer_keyframes.h"
 
-// doge
-const uint8_t mylogo[512] = {
+const uint8_t logo_doge[512] = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
@@ -75,8 +70,9 @@ const uint8_t mylogo[512] = {
 bool rlogo(keyframe_animation_t* animation, visualizer_state_t* state) {
     (void)state;
     (void)animation;
-    gdispClear(Black);
-    gdispGBlitArea(GDISP, 0, 0, LCD_WIDTH, LCD_HEIGHT, 0, 0, LCD_WIDTH, (pixel_t*)mylogo);
+
+    gdispClear(White);
+    gdispGBlitArea(GDISP, 0, 0, LCD_WIDTH, LCD_HEIGHT, 0, 0, LCD_WIDTH, (pixel_t*)logo_doge);
 
     return false;
 }
