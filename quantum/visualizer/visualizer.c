@@ -501,6 +501,11 @@ void visualizer_resume(void) {
     update_status(true);
 }
 
+void modded(bool modded) {
+    current_status.modded = modded;
+    update_status(true);
+}
+
 #ifdef BACKLIGHT_ENABLE
 void backlight_set(uint8_t level) {
     current_status.backlight_level = level;

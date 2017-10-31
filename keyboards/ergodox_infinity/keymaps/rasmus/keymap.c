@@ -97,7 +97,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                      KC_H,   KC_J,   KC_K,   KC_L,   KC_SCLN,KC_QUOT,
              M(SHRUG),KC_N,   KC_M,   KC_COMM,KC_DOT, KC_SLSH,KC_RSFT,
                              KC_RGUI,KC_RALT,KC_DEL ,KC_INS ,KC_RCTL,
-             TG(CALCU),        KC_LOCK,
+             CALC,        KC_LOCK,
              KC_PGUP,
              KC_PGDN,MO(FL1),KC_ENT
     ),
@@ -267,6 +267,8 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
     return MACRO_NONE;
 };
 
+bool calc_on = false;
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     // dynamically generate these.
@@ -291,8 +293,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
       break;
     case CALC:
-    //  layer_on(CALCU);
-      //calc_on();
+      if (record->event.pressed) {
+        if (calc_on) {
+          layer_off(CALCU);
+          calc_on = false;
+          calc_off();
+        } else {
+          layer_on(CALCU);
+          calc_on = true;
+        }
+      }
+      return false;
+      break;
     case C_0:
       if (record->event.pressed) {
         calc_add('0');

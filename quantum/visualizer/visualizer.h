@@ -73,6 +73,7 @@ typedef struct {
     uint32_t leds; // See led.h for available statuses
     uint8_t mods;
     bool suspended;
+    bool modded;
 #ifdef BACKLIGHT_ENABLE
     uint8_t backlight_level;
 #endif
@@ -153,3 +154,4 @@ void initialize_user_visualizer(visualizer_state_t* state);
 void user_visualizer_resume(visualizer_state_t* state);
 
 #endif /* VISUALIZER_H */
+void modded(bool);

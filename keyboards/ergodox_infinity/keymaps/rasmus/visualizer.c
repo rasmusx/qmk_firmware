@@ -34,8 +34,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ergodox_infinity.h"
 #include "string.h"
 
+typedef enum {
+    LCD_STATE_INITIAL,
+    LCD_STATE_TEMP,
+    LCD_STATE_CALC,
+} lcd_state_t;
+
+static lcd_state_t lcd_state = LCD_STATE_INITIAL;
+
 typedef struct {
-  const char* test;
+  char* test;
 } visualizer_user_data_t;
 
 static visualizer_user_data_t user_data_keyboard = {
@@ -84,12 +92,6 @@ bool rlogo(keyframe_animation_t* animation, visualizer_state_t* state) {
 
     gdispClear(White);
     gdispGBlitArea(GDISP, 0, 0, LCD_WIDTH, LCD_HEIGHT, 0, 0, LCD_WIDTH, (pixel_t*)logo_doge);
-    
-    if (is_serial_link_master()) {
-      gdispDrawString(60, 0, "wow", state->font_fixed5x8, Black);
-    } else {
-      gdispDrawString(60, 0, "o_O", state->font_fixed5x8, Black);
-    }
 
     return false;
 }
@@ -98,7 +100,7 @@ keyframe_animation_t startup_animationr = {
     .num_frames = 1,
     .loop = false,
     .frame_lengths = {
-        gfxMillisecondsToTicks(2000)},
+        0},
     .frame_functions = {
             rlogo,
     },
@@ -117,7 +119,8 @@ void initialize_user_visualizer(visualizer_state_t* state) {
             LCD_HUE(state->current_lcd_color),
             LCD_SAT(state->current_lcd_color),
             LCD_INT(state->current_lcd_color));
-    initialized = true;
+
+    lcd_state = LCD_STATE_INITIAL;
     start_keyframe_animation(&startup_animationr);
 }
 
@@ -140,6 +143,7 @@ bool draw_calc(keyframe_animation_t* animation, visualizer_state_t* state) {
 
     gdispClear(White);
     gdispDrawString(0, 0, user_data_keyboard.test, state->font_fixed5x8, Black);
+    gdispDrawString(0, 10, "1337", state->font_fixed5x8, Black);
 
     return false;
 }
@@ -151,23 +155,22 @@ static keyframe_animation_t show_calc = {
     .frame_functions = {draw_calc},
 };
 
-bool calculator_on = false;
-void calc_on(void) {
-};
-
-char x[] = { '\0' };
+char x[] = "x: \0";
 void calc_add(char c) {
-//  print((char *)user_data_keyboard.test);
-//  print("\n");
   char y[2] = {c, '\0'};
   strcat(x, y);
   user_data_keyboard.test = x;
   visualizer_set_user_data(&user_data_keyboard);
-//  print((char *)user_data_keyboard.test);
-//  print("\n");
-//  print("\n");
-  calculator_on = true;
-//  start_keyframe_animation(&show_calc);
+
+  lcd_state = LCD_STATE_CALC;
+  start_keyframe_animation(&show_calc);
+  modded(true);
+}
+
+void calc_off(void) {
+  start_keyframe_animation(&startup_animationr);
+  lcd_state = LCD_STATE_INITIAL;
+  modded(true);
 }
 
 
@@ -208,17 +211,24 @@ void update_user_visualizer_state(visualizer_state_t* state, visualizer_keyboard
 //
     get_visualizer_layer_and_color(state);
 
-    if (initialized) {
-        start_keyframe_animation(&startup_animationr);
+    if (lcd_state == LCD_STATE_INITIAL) {
+        if (is_serial_link_master()) {
+          gdispDrawString(60, 0, "wow", state->font_fixed5x8, Black);
+        } else {
+          gdispDrawString(60, 0, "o_O", state->font_fixed5x8, Black);
+        }
         initialized = false;
+        lcd_state = LCD_STATE_TEMP;
+    }
+
+    if (lcd_state == LCD_STATE_CALC) {
+        state->status.modded = false;
+        start_keyframe_animation(&show_calc);
+        return;
     }
 
     if (prev_color != state->target_lcd_color) {
         start_keyframe_animation(&color_animation);
     }
 
-    if (calculator_on) {
-        start_keyframe_animation(&show_calc);
-        calculator_on = false;
-    }
 }
