@@ -142,8 +142,10 @@ bool draw_calc(keyframe_animation_t* animation, visualizer_state_t* state) {
     (void)animation;
 
     gdispClear(White);
+    gdispDrawString(0, 8, "4:", state->font_fixed5x8, Black);
+    gdispDrawString(0, 16, "3:", state->font_fixed5x8, Black);
+    gdispDrawString(0, 24, "2:", state->font_fixed5x8, Black);
     gdispDrawString(0, 0, user_data_keyboard.test, state->font_fixed5x8, Black);
-    gdispDrawString(0, 10, "1337", state->font_fixed5x8, Black);
 
     return false;
 }
@@ -155,11 +157,20 @@ static keyframe_animation_t show_calc = {
     .frame_functions = {draw_calc},
 };
 
-char x[] = "x: \0";
+#define STACK_SIZE 4
+
+char new_stack[STACK_SIZE][20];
+char stack[2][20];
+
+
+char x[] = "1: \0";
 void calc_add(char c) {
   char y[2] = {c, '\0'};
-  strcat(x, y);
-  user_data_keyboard.test = x;
+  strcat(stack[0], y);
+  //char dest[20] = {'\0'};
+  //strcpy(dest, "0: ");
+  //strcat(dest, y);
+  user_data_keyboard.test = stack[0];
   visualizer_set_user_data(&user_data_keyboard);
 
   lcd_state = LCD_STATE_CALC;
