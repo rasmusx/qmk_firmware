@@ -17,6 +17,8 @@ enum custom_keycodes {
   VRSN,
   RGB_SLD,
   CALC,
+  C_DEL,
+  C_DOT,
   C_0,
   C_1,
   C_2,
@@ -244,11 +246,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        KC_TRNS,  KC_TRNS, C_7  , C_8  , C_9  , KC_PSLS, KC_TRNS,
        KC_TRNS,  KC_TRNS, C_4  , C_5  , C_6  , KC_PAST, KC_TRNS,
                  KC_TRNS, C_1  , C_2  , C_3  , KC_PMNS, KC_TRNS,
-       KC_TRNS,  KC_TRNS, C_0  , KC_TRNS, KC_TRNS, KC_PPLS, KC_TRNS,
+       KC_TRNS,  KC_TRNS, C_0  , C_DOT, C_DOT, KC_PPLS, KC_TRNS,
                           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
        KC_TRNS,  KC_TRNS,
        KC_TRNS,
-       KC_TRNS, KC_TRNS, KC_TRNS
+       C_DEL, KC_TRNS, KC_TRNS
 ),
 };
 
@@ -302,6 +304,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           layer_on(CALCU);
           calc_on = true;
         }
+      }
+      return false;
+      break;
+    case C_DEL:
+      if (record->event.pressed) {
+        calc_del();
+      }
+      return false;
+      break;
+    case C_DOT:
+      if (record->event.pressed) {
+        calc_add('.');
       }
       return false;
       break;

@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #error This visualizer needs that LCD is enabled
 #endif
 
+#include <stdio.h>
 #include "lcd_backlight_keyframes.h"
 #include "led_backlight_keyframes.h"
 #include "led.h"
@@ -33,6 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "system/serial_link.h"
 #include "ergodox_infinity.h"
 #include "string.h"
+#include "chprintf.h"
+
 
 typedef enum {
     LCD_STATE_INITIAL,
@@ -43,11 +46,13 @@ typedef enum {
 static lcd_state_t lcd_state = LCD_STATE_INITIAL;
 
 typedef struct {
-  char* test;
+  //char* test;
+  double test;
 } visualizer_user_data_t;
 
 static visualizer_user_data_t user_data_keyboard = {
-  .test = ""
+  //.test = ""
+  .test =0.0 
 };
 
 const uint8_t logo_doge[512] = {
@@ -142,10 +147,17 @@ bool draw_calc(keyframe_animation_t* animation, visualizer_state_t* state) {
     (void)animation;
 
     gdispClear(White);
-    gdispDrawString(0, 8, "4:", state->font_fixed5x8, Black);
-    gdispDrawString(0, 16, "3:", state->font_fixed5x8, Black);
+
+    char output[20];
+    chsnprintf(output, 20, "1: %.2f\0", user_data_keyboard.test);
+    char output2[20];
+    sprintf(output2, "1: %x\0", user_data_keyboard.test);
+    char output3[20];
+    sprintf(output3, "1: %o\0", user_data_keyboard.test);
+    gdispDrawString(0, 0, output, state->font_fixed5x8, Black);
+    gdispDrawString(0, 8, output2, state->font_fixed5x8, Black);
+    gdispDrawString(0, 16, output3, state->font_fixed5x8, Black);
     gdispDrawString(0, 24, "2:", state->font_fixed5x8, Black);
-    gdispDrawString(0, 0, user_data_keyboard.test, state->font_fixed5x8, Black);
 
     return false;
 }
@@ -159,23 +171,66 @@ static keyframe_animation_t show_calc = {
 
 #define STACK_SIZE 4
 
-char new_stack[STACK_SIZE][20];
-char stack[2][20];
+int depth = 0;
+char stack[STACK_SIZE][20] = {'\0'};
 
+double stackx[STACK_SIZE];
 
-char x[] = "1: \0";
-void calc_add(char c) {
-  char y[2] = {c, '\0'};
-  strcat(stack[0], y);
-  //char dest[20] = {'\0'};
-  //strcpy(dest, "0: ");
-  //strcat(dest, y);
-  user_data_keyboard.test = stack[0];
+char buffer[10] = {'\0'};
+double xd = 0;
+
+double stof(const char* s){
+  double rez = 0, fact = 1;
+  if (*s == '-'){
+    s++;
+    fact = -1;
+  };
+  for (int point_seen = 0; *s; s++){
+    if (*s == '.'){
+      point_seen = 1; 
+      continue;
+    };
+    int d = *s - '0';
+    if (d >= 0 && d <= 9){
+      if (point_seen) fact /= 10.0f;
+      rez = rez * 10.0 + (double)d;
+    };
+  };
+  return rez * fact;
+};
+
+void update_buffer(void) {
+  stackx[0] = stof(buffer);
+
+  user_data_keyboard.test = stackx[0];
   visualizer_set_user_data(&user_data_keyboard);
 
   lcd_state = LCD_STATE_CALC;
   start_keyframe_animation(&show_calc);
   modded(true);
+}
+
+void calc_add(char c) {
+  char tmp[2] = {c, '\0'};
+  if (strlen(stack[0]) < sizeof(stack[0])) {
+    strcat(stack[0], tmp);
+    strcat(buffer, tmp);
+  }
+  update_buffer();
+
+}
+
+void calc_del(void) {
+  buffer[strlen(buffer)-1] = 0;
+  update_buffer();
+}
+
+void push(char *v) {
+	//stack[depth++] = v;
+}
+
+void calc_enter(void) {
+  //push();
 }
 
 void calc_off(void) {
@@ -211,15 +266,6 @@ static void get_visualizer_layer_and_color(visualizer_state_t* state) {
 void update_user_visualizer_state(visualizer_state_t* state, visualizer_keyboard_status_t* prev_status) {
     uint32_t prev_color = state->target_lcd_color;
 
-//    visualizer_user_data_t* user_data_new = (visualizer_user_data_t*)state->status.user_data;
-//    visualizer_user_data_t* user_data_old = (visualizer_user_data_t*)prev_status->user_data;
-
-    print("update\n");
-//    if (user_data_new->test != user_data_old->test) {
-//      print("NOT SAME\n");
-//    }
-//
-//
     get_visualizer_layer_and_color(state);
 
     if (lcd_state == LCD_STATE_INITIAL) {
