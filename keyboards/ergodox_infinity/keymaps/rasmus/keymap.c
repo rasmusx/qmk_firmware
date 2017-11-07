@@ -274,7 +274,7 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
     return MACRO_NONE;
 };
 
-bool calc_on = false;
+bool calc_enabled = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
@@ -301,13 +301,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case CALC:
       if (record->event.pressed) {
-        if (calc_on) {
+        if (calc_enabled) {
           layer_off(CALCU);
-          calc_on = false;
+          calc_enabled = false;
           calc_off();
         } else {
           layer_on(CALCU);
-          calc_on = true;
+          calc_enabled = true;
+          calc_on();
         }
       }
       return false;
@@ -369,14 +370,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case C_7:
       if (record->event.pressed) {
         calc_addChar('7');
-      ergodox_right_led_1_on();
       }
       return false;
       break;
     case C_8:
       if (record->event.pressed) {
         calc_addChar('8');
-      ergodox_right_led_2_on();
       }
       return false;
       break;

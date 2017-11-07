@@ -1,4 +1,5 @@
 void calc_addChar(char c);
+void calc_on(void);
 void calc_off(void);
 void calc_del(void);
 void calc_enter(void);

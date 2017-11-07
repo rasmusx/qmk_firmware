@@ -177,11 +177,7 @@ static keyframe_animation_t show_calc = {
 
 #define STACK_SIZE 4
 
-int depth = 1;
-char stack[STACK_SIZE][20] = {'\0'};
-double dStack[STACK_SIZE] = {0};
-
-double stackx[STACK_SIZE];
+double stack[STACK_SIZE];
 
 char buffer[10] = {'\0'};
 double xd = 0;
@@ -209,10 +205,10 @@ double stof(const char* s){
 bool reset = false;
 
 void update_buffer(void) {
-  user_data_keyboard.stack[0] = dStack[0];
-  user_data_keyboard.stack[1] = dStack[1];
-  user_data_keyboard.stack[2] = dStack[2];
-  user_data_keyboard.stack[3] = dStack[3];
+  user_data_keyboard.stack[0] = stack[0];
+  user_data_keyboard.stack[1] = stack[1];
+  user_data_keyboard.stack[2] = stack[2];
+  user_data_keyboard.stack[3] = stack[3];
 
   visualizer_set_user_data(&user_data_keyboard);
 
@@ -222,47 +218,48 @@ void update_buffer(void) {
 }
 
 double pop(void) {
-  if (depth > 0) {
-    double val = dStack[--depth];
-    dStack[depth] = 0.0;
-    return val;
-  } {
-    return 0.0;
-  }
+  double val = stack[0];
+  memmove(stack, stack + 1, sizeof(stack) - sizeof(*stack));
+  stack[STACK_SIZE - 1] = 0.0;
+  return val;
 }
-// d1 2 1=2 2= 3= 4=
-// d2 e 1=2 2=2 3= 4=
-// d2 5 1=5 2=2 3= 4=
-// d3 e 1=5 2=5 3=2
 
 void push(double v) {
-  if (depth < STACK_SIZE) {
-    memmove(dStack + 1, dStack, (STACK_SIZE-1)*sizeof(double));
-    //dStack[depth+] = v;
-    dStack[0] = v;
-    depth++;
-    //pop();
-  }
+  memmove(stack + 1, stack, (STACK_SIZE - 1) * sizeof(double));
+  stack[0] = v;
 }
+
+void calc_on(void) {
+  memset(stack, 0, sizeof(stack));
+  update_buffer();
+}
+bool dot_seen = false;
 
 void calc_addChar(char c) {
   if (reset) {
-    if (dStack[1] == 0) {
-      push(dStack[0]);
+    if (stack[1] == 0) {
+      push(stack[0]);
     }
     buffer[0] = '\0';
     reset = false;
   }
   if (strlen(buffer) < sizeof(buffer)) {
-    char tmp[2] = {c, '\0'};
-    strcat(buffer, tmp);
-    dStack[0] = stof(buffer);
+    if (c == '.') {
+      dot_seen = true;
+      return;
+    }
+    if (dot_seen) {
+      char tmp[3] = {'.', c, '\0'};
+      strcat(buffer, tmp);
+      dot_seen = false;
+    } else {
+      char tmp[2] = {c, '\0'};
+      strcat(buffer, tmp);
+    }
+    stack[0] = stof(buffer);
   }
   update_buffer();
 }
-
-// create function to handle all C_ events
-// numbers in buffer. enter and other key presses change stack.
 
 void calc_add(void) {
   push(pop() + pop());
@@ -283,19 +280,21 @@ void calc_multiply(void) {
 }
 
 void calc_subtract(void) {
-  push(pop() - pop());
+  double val1 = pop();
+  double val2 = pop();
+  push(val2 - val1);
   reset = true;
   update_buffer();
 }
 
 void calc_del(void) {
   buffer[strlen(buffer)-1] = 0;
-  dStack[0] = stof(buffer);
+  stack[0] = stof(buffer);
   update_buffer();
 }
 
 void calc_enter(void) {
-  push(dStack[0]);
+  push(stack[0]);
   reset = true;
   update_buffer();
 }
