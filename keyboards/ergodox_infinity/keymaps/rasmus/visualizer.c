@@ -45,14 +45,17 @@ typedef enum {
 
 static lcd_state_t lcd_state = LCD_STATE_INITIAL;
 
+
 typedef struct {
   //char* test;
   double test;
+  double stack[4];
 } visualizer_user_data_t;
 
 static visualizer_user_data_t user_data_keyboard = {
   //.test = ""
-  .test =0.0 
+  .test =0.0,
+  .stack = {0}
 };
 
 const uint8_t logo_doge[512] = {
@@ -148,16 +151,19 @@ bool draw_calc(keyframe_animation_t* animation, visualizer_state_t* state) {
 
     gdispClear(White);
 
-    char output[20];
-    chsnprintf(output, 20, "1: %.2f\0", user_data_keyboard.test);
+    char output1[20];
+    chsnprintf(output1, 20, "1: %.2f\0", user_data_keyboard.stack[0]);
     char output2[20];
-    sprintf(output2, "1: %x\0", user_data_keyboard.test);
+    chsnprintf(output2, 20, "2: %.2f\0", user_data_keyboard.stack[1]);
     char output3[20];
-    sprintf(output3, "1: %o\0", user_data_keyboard.test);
-    gdispDrawString(0, 0, output, state->font_fixed5x8, Black);
-    gdispDrawString(0, 8, output2, state->font_fixed5x8, Black);
-    gdispDrawString(0, 16, output3, state->font_fixed5x8, Black);
-    gdispDrawString(0, 24, "2:", state->font_fixed5x8, Black);
+    chsnprintf(output3, 20, "3: %.2f\0", user_data_keyboard.stack[2]);
+    char output4[20];
+    chsnprintf(output4, 20, "4: %.2f\0", user_data_keyboard.stack[3]);
+
+    gdispDrawString(0, 0, output4, state->font_fixed5x8, Black);
+    gdispDrawString(0, 8, output3, state->font_fixed5x8, Black);
+    gdispDrawString(0, 16, output2, state->font_fixed5x8, Black);
+    gdispDrawString(0, 24, output1, state->font_fixed5x8, Black);
 
     return false;
 }
@@ -171,8 +177,9 @@ static keyframe_animation_t show_calc = {
 
 #define STACK_SIZE 4
 
-int depth = 0;
+int depth = 1;
 char stack[STACK_SIZE][20] = {'\0'};
+double dStack[STACK_SIZE] = {0};
 
 double stackx[STACK_SIZE];
 
@@ -199,10 +206,14 @@ double stof(const char* s){
   return rez * fact;
 };
 
-void update_buffer(void) {
-  stackx[0] = stof(buffer);
+bool reset = false;
 
-  user_data_keyboard.test = stackx[0];
+void update_buffer(void) {
+  user_data_keyboard.stack[0] = dStack[0];
+  user_data_keyboard.stack[1] = dStack[1];
+  user_data_keyboard.stack[2] = dStack[2];
+  user_data_keyboard.stack[3] = dStack[3];
+
   visualizer_set_user_data(&user_data_keyboard);
 
   lcd_state = LCD_STATE_CALC;
@@ -210,27 +221,83 @@ void update_buffer(void) {
   modded(true);
 }
 
-void calc_add(char c) {
-  char tmp[2] = {c, '\0'};
-  if (strlen(stack[0]) < sizeof(stack[0])) {
-    strcat(stack[0], tmp);
+double pop(void) {
+  if (depth > 0) {
+    double val = dStack[--depth];
+    dStack[depth] = 0.0;
+    return val;
+  } {
+    return 0.0;
+  }
+}
+// d1 2 1=2 2= 3= 4=
+// d2 e 1=2 2=2 3= 4=
+// d2 5 1=5 2=2 3= 4=
+// d3 e 1=5 2=5 3=2
+
+void push(double v) {
+  if (depth < STACK_SIZE) {
+    memmove(dStack + 1, dStack, (STACK_SIZE-1)*sizeof(double));
+    //dStack[depth+] = v;
+    dStack[0] = v;
+    depth++;
+    //pop();
+  }
+}
+
+void calc_addChar(char c) {
+  if (reset) {
+    if (dStack[1] == 0) {
+      push(dStack[0]);
+    }
+    buffer[0] = '\0';
+    reset = false;
+  }
+  if (strlen(buffer) < sizeof(buffer)) {
+    char tmp[2] = {c, '\0'};
     strcat(buffer, tmp);
+    dStack[0] = stof(buffer);
   }
   update_buffer();
+}
 
+// create function to handle all C_ events
+// numbers in buffer. enter and other key presses change stack.
+
+void calc_add(void) {
+  push(pop() + pop());
+  reset = true;
+  update_buffer();
+}
+
+void calc_divide(void) {
+  push(pop() / pop());
+  reset = true;
+  update_buffer();
+}
+
+void calc_multiply(void) {
+  push(pop() * pop());
+  reset = true;
+  update_buffer();
+}
+
+void calc_subtract(void) {
+  push(pop() - pop());
+  reset = true;
+  update_buffer();
 }
 
 void calc_del(void) {
   buffer[strlen(buffer)-1] = 0;
+  dStack[0] = stof(buffer);
   update_buffer();
 }
 
-void push(char *v) {
-	//stack[depth++] = v;
-}
-
 void calc_enter(void) {
-  //push();
+  push(dStack[0]);
+  reset = true;
+  update_buffer();
 }
 
 void calc_off(void) {

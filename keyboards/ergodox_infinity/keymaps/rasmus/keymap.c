@@ -29,6 +29,11 @@ enum custom_keycodes {
   C_7,
   C_8,
   C_9,
+  C_ENT,
+  C_ADD,
+  C_DIVIDE,
+  C_MULTIPLY,
+  C_SUBTRACT
 };
 
 enum macro_id {
@@ -101,7 +106,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                              KC_RGUI,KC_RALT,KC_DEL ,KC_INS ,KC_RCTL,
              CALC,        KC_LOCK,
              KC_PGUP,
-             KC_PGDN,LT(FL1,OSL(FL1)),KC_ENT
+             KC_PGDN,MO(FL1),KC_ENT
     ),
 /* Keymap 1: Symbol Layer
  *
@@ -243,14 +248,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        //KC_TRNS,  KC_TRNS,
        //KC_TRNS,
        //KC_TRNS, KC_TRNS, KC_TRNS
-       KC_TRNS,  KC_TRNS, C_7  , C_8  , C_9  , KC_PSLS, KC_TRNS,
-       KC_TRNS,  KC_TRNS, C_4  , C_5  , C_6  , KC_PAST, KC_TRNS,
-                 KC_TRNS, C_1  , C_2  , C_3  , KC_PMNS, KC_TRNS,
-       KC_TRNS,  KC_TRNS, C_0  , C_DOT, C_DOT, KC_PPLS, KC_TRNS,
+       KC_TRNS,  KC_TRNS, C_7  , C_8  , C_9  , C_DIVIDE, KC_TRNS,
+       KC_TRNS,  KC_TRNS, C_4  , C_5  , C_6  , C_MULTIPLY, KC_TRNS,
+                 KC_TRNS, C_1  , C_2  , C_3  , C_SUBTRACT, KC_TRNS,
+       KC_TRNS,  KC_TRNS, C_0  , C_DOT, C_DOT, C_ADD, KC_TRNS,
                           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
        KC_TRNS,  KC_TRNS,
        KC_TRNS,
-       C_DEL, KC_TRNS, KC_TRNS
+       C_DEL, KC_TRNS, C_ENT
 ),
 };
 
@@ -315,69 +320,99 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case C_DOT:
       if (record->event.pressed) {
-        calc_add('.');
+        calc_addChar('.');
       }
       return false;
       break;
     case C_0:
       if (record->event.pressed) {
-        calc_add('0');
+        calc_addChar('0');
       }
       return false;
       break;
     case C_1:
       if (record->event.pressed) {
-        calc_add('1');
+        calc_addChar('1');
       }
       return false;
       break;
     case C_2:
       if (record->event.pressed) {
-        calc_add('2');
+        calc_addChar('2');
       }
       return false;
       break;
     case C_3:
       if (record->event.pressed) {
-        calc_add('3');
+        calc_addChar('3');
       }
       return false;
       break;
     case C_4:
       if (record->event.pressed) {
-        calc_add('4');
+        calc_addChar('4');
       }
       return false;
       break;
     case C_5:
       if (record->event.pressed) {
-        calc_add('5');
+        calc_addChar('5');
       }
       return false;
       break;
     case C_6:
       if (record->event.pressed) {
-        calc_add('6');
+        calc_addChar('6');
       }
       return false;
       break;
     case C_7:
       if (record->event.pressed) {
-        calc_add('7');
+        calc_addChar('7');
       ergodox_right_led_1_on();
       }
       return false;
       break;
     case C_8:
       if (record->event.pressed) {
-        calc_add('8');
+        calc_addChar('8');
       ergodox_right_led_2_on();
       }
       return false;
       break;
     case C_9:
       if (record->event.pressed) {
-        calc_add('9');
+        calc_addChar('9');
+      }
+      return false;
+      break;
+    case C_ENT:
+      if (record->event.pressed) {
+        calc_enter();
+      }
+      return false;
+      break;
+    case C_ADD:
+      if (record->event.pressed) {
+        calc_add();
+      }
+      return false;
+      break;
+    case C_DIVIDE:
+      if (record->event.pressed) {
+        calc_divide();
+      }
+      return false;
+      break;
+    case C_MULTIPLY:
+      if (record->event.pressed) {
+        calc_multiply();
+      }
+      return false;
+      break;
+    case C_SUBTRACT:
+      if (record->event.pressed) {
+        calc_subtract();
       }
       return false;
       break;
