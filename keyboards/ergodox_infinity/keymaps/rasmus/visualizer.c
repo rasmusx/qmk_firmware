@@ -45,9 +45,10 @@ typedef enum {
 
 static lcd_state_t lcd_state = LCD_STATE_INITIAL;
 
+#define STACK_SIZE 4
 
 typedef struct {
-  double stack[4];
+  double stack[STACK_SIZE];
 } visualizer_user_data_t;
 
 static visualizer_user_data_t user_data_keyboard = {
@@ -174,8 +175,6 @@ static keyframe_animation_t show_calc = {
     .frame_functions = {draw_calc},
 };
 
-#define STACK_SIZE 4
-
 double stack[STACK_SIZE];
 
 char buffer[10] = {'\0'};
@@ -204,10 +203,9 @@ double stof(const char* s){
 bool reset = false;
 
 void update_buffer(void) {
-  user_data_keyboard.stack[0] = stack[0];
-  user_data_keyboard.stack[1] = stack[1];
-  user_data_keyboard.stack[2] = stack[2];
-  user_data_keyboard.stack[3] = stack[3];
+  for (int i = 0; i < STACK_SIZE; i++) {
+    user_data_keyboard.stack[i] = stack[i];
+  }
 
   visualizer_set_user_data(&user_data_keyboard);
 
