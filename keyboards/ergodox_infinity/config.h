@@ -75,7 +75,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SERIAL_LINK_BAUD 562500
 #define SERIAL_LINK_THREAD_PRIORITY (NORMALPRIO - 1)
 
+#ifndef VISUALIZER_USER_DATA_SIZE
 #define VISUALIZER_USER_DATA_SIZE 16
+#endif
 
 /*
  * Feature disable options

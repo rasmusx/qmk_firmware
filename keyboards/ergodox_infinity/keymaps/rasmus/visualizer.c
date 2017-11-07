@@ -47,16 +47,15 @@ static lcd_state_t lcd_state = LCD_STATE_INITIAL;
 
 
 typedef struct {
-  //char* test;
-  double test;
   double stack[4];
 } visualizer_user_data_t;
 
 static visualizer_user_data_t user_data_keyboard = {
-  //.test = ""
-  .test =0.0,
   .stack = {0}
 };
+
+_Static_assert(sizeof(visualizer_user_data_t) <= VISUALIZER_USER_DATA_SIZE,
+    "Please increase the VISUALIZER_USER_DATA_SIZE.");
 
 const uint8_t logo_doge[512] = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
@@ -152,13 +151,13 @@ bool draw_calc(keyframe_animation_t* animation, visualizer_state_t* state) {
     gdispClear(White);
 
     char output1[20];
-    chsnprintf(output1, 20, "1: %.2f\0", user_data_keyboard.stack[0]);
+    chsnprintf(output1, 20, "1: %.5f\0", user_data_keyboard.stack[0]);
     char output2[20];
-    chsnprintf(output2, 20, "2: %.2f\0", user_data_keyboard.stack[1]);
+    chsnprintf(output2, 20, "2: %.5f\0", user_data_keyboard.stack[1]);
     char output3[20];
-    chsnprintf(output3, 20, "3: %.2f\0", user_data_keyboard.stack[2]);
+    chsnprintf(output3, 20, "3: %.5f\0", user_data_keyboard.stack[2]);
     char output4[20];
-    chsnprintf(output4, 20, "4: %.2f\0", user_data_keyboard.stack[3]);
+    chsnprintf(output4, 20, "4: %.5f\0", user_data_keyboard.stack[3]);
 
     gdispDrawString(0, 0, output4, state->font_fixed5x8, Black);
     gdispDrawString(0, 8, output3, state->font_fixed5x8, Black);
@@ -214,18 +213,17 @@ void update_buffer(void) {
 
   lcd_state = LCD_STATE_CALC;
   start_keyframe_animation(&show_calc);
-  modded(true);
 }
 
 double pop(void) {
   double val = stack[0];
-  memmove(stack, stack + 1, sizeof(stack) - sizeof(*stack));
+  memmove(stack, stack + 1, (STACK_SIZE - 1) * sizeof(*stack));
   stack[STACK_SIZE - 1] = 0.0;
   return val;
 }
 
 void push(double v) {
-  memmove(stack + 1, stack, (STACK_SIZE - 1) * sizeof(double));
+  memmove(stack + 1, stack, (STACK_SIZE - 1) * sizeof(*stack));
   stack[0] = v;
 }
 
@@ -268,7 +266,9 @@ void calc_add(void) {
 }
 
 void calc_divide(void) {
-  push(pop() / pop());
+  double val1 = pop();
+  double val2 = pop();
+  push(val2 / val1);
   reset = true;
   update_buffer();
 }
@@ -302,7 +302,6 @@ void calc_enter(void) {
 void calc_off(void) {
   start_keyframe_animation(&startup_animationr);
   lcd_state = LCD_STATE_INITIAL;
-  modded(true);
 }
 
 
@@ -345,7 +344,6 @@ void update_user_visualizer_state(visualizer_state_t* state, visualizer_keyboard
     }
 
     if (lcd_state == LCD_STATE_CALC) {
-        state->status.modded = false;
         start_keyframe_animation(&show_calc);
         return;
     }

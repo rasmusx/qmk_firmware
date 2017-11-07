@@ -25,7 +25,6 @@ SOFTWARE.
 #include "config.h"
 #include "visualizer.h"
 #include <string.h>
-#include <stdio.h>
 #ifdef PROTOCOL_CHIBIOS
 #include "ch.h"
 #endif
@@ -38,12 +37,11 @@ SOFTWARE.
 
 //#define DEBUG_VISUALIZER
 
+#ifdef DEBUG_VISUALIZER
 #include "debug.h"
-//#ifdef DEBUG_VISUALIZER
-//#include "debug.h"
-//#else
-//#include "nodebug.h"
-//#endif
+#else
+#include "nodebug.h"
+#endif
 
 #ifdef SERIAL_LINK_ENABLE
 #include "serial_link/protocol/transport.h"
@@ -498,11 +496,6 @@ void visualizer_suspend(void) {
 
 void visualizer_resume(void) {
     current_status.suspended = false;
-    update_status(true);
-}
-
-void modded(bool modded) {
-    current_status.modded = modded;
     update_status(true);
 }
 
