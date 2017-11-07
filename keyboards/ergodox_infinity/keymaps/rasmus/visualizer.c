@@ -228,6 +228,7 @@ void push(double v) {
 }
 
 void calc_on(void) {
+  buffer[0] = '\0';
   memset(stack, 0, sizeof(stack));
   update_buffer();
 }
