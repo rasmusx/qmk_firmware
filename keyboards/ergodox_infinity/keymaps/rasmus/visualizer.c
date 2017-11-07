@@ -200,7 +200,7 @@ double stof(const char* s){
   return rez * fact;
 };
 
-bool reset = false;
+bool resetBuffer = false;
 
 void update_buffer(void) {
   for (int i = 0; i < STACK_SIZE; i++) {
@@ -232,13 +232,15 @@ void calc_on(void) {
 }
 bool dot_seen = false;
 
+bool pushStack = true;
 void calc_addChar(char c) {
-  if (reset) {
-    if (stack[1] == 0) {
-      push(stack[0]);
-    }
+  if (pushStack) {
+    push(stack[0]);
+    pushStack = false;
+  }
+  if (resetBuffer) {
     buffer[0] = '\0';
-    reset = false;
+    resetBuffer = false;
   }
   if (strlen(buffer) < sizeof(buffer)) {
     if (c == '.') {
@@ -260,7 +262,8 @@ void calc_addChar(char c) {
 
 void calc_add(void) {
   push(pop() + pop());
-  reset = true;
+  resetBuffer = true;
+  pushStack = true;
   update_buffer();
 }
 
@@ -268,13 +271,15 @@ void calc_divide(void) {
   double val1 = pop();
   double val2 = pop();
   push(val2 / val1);
-  reset = true;
+  resetBuffer = true;
+  pushStack = true;
   update_buffer();
 }
 
 void calc_multiply(void) {
   push(pop() * pop());
-  reset = true;
+  resetBuffer = true;
+  pushStack = true;
   update_buffer();
 }
 
@@ -282,7 +287,8 @@ void calc_subtract(void) {
   double val1 = pop();
   double val2 = pop();
   push(val2 - val1);
-  reset = true;
+  pushStack = true;
+  resetBuffer = true;
   update_buffer();
 }
 
@@ -294,7 +300,8 @@ void calc_del(void) {
 
 void calc_enter(void) {
   push(stack[0]);
-  reset = true;
+  pushStack = false;
+  resetBuffer = true;
   update_buffer();
 }
 
@@ -344,7 +351,6 @@ void update_user_visualizer_state(visualizer_state_t* state, visualizer_keyboard
 
     if (lcd_state == LCD_STATE_CALC) {
         start_keyframe_animation(&show_calc);
-        return;
     }
 
     if (prev_color != state->target_lcd_color) {
