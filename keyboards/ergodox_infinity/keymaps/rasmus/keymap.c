@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include "print.h"
 #include "debug.h"
 #include "action_layer.h"
 #include "version.h"
@@ -10,6 +11,8 @@
 #define GAME 2 // media keys
 #define ESDF 3 // media keys
 #define CALCU 4 // media keys
+
+#define TEST(x) (x | 0x8000)
 
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // can always be here
@@ -33,7 +36,8 @@ enum custom_keycodes {
   C_ADD,
   C_DIVIDE,
   C_MULTIPLY,
-  C_SUBTRACT
+  C_SUBTRACT,
+  TEST,
 };
 
 enum macro_id {
@@ -248,7 +252,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        //KC_TRNS,  KC_TRNS,
        //KC_TRNS,
        //KC_TRNS, KC_TRNS, KC_TRNS
-       KC_TRNS,  KC_TRNS, C_7  , C_8  , C_9  , C_DIVIDE, KC_TRNS,
+       KC_TRNS,  TEST('*'), C_7  , C_8  , C_9  , C_DIVIDE, KC_TRNS,
        KC_TRNS,  KC_TRNS, C_4  , C_5  , C_6  , C_MULTIPLY, KC_TRNS,
                  KC_TRNS, C_1  , C_2  , C_3  , C_SUBTRACT, KC_TRNS,
        KC_TRNS,  KC_TRNS, C_0  , C_DOT, C_DOT, C_ADD, KC_TRNS,
@@ -416,11 +420,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
       break;
   }
+
+  if (keycode > QK_UNICODE && record->event.pressed) {
+    uint16_t unicode = keycode & 0x7FFF;
+    uprint("y");
+    uprint((char *)&unicode);
+    register_code(unicode);
+    unregister_code(unicode);
+
+    return false;
+  }
   return true;
 }
 
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
+  debug_enable = true;
 
 };
 
