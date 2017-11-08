@@ -37,6 +37,7 @@ enum custom_keycodes {
   C_DIVIDE,
   C_MULTIPLY,
   C_SUBTRACT,
+  C_MODE,
   TEST,
 };
 
@@ -258,7 +259,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        KC_TRNS,  KC_TRNS, C_0  , C_DOT, C_DOT, C_ADD, KC_TRNS,
                           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
        KC_TRNS,  KC_TRNS,
-       KC_TRNS,
+       C_MODE,
        C_DEL, KC_TRNS, C_ENT
 ),
 };
@@ -416,6 +417,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case C_SUBTRACT:
       if (record->event.pressed) {
         calc_subtract();
+      }
+      return false;
+      break;
+    case C_MODE:
+      if (record->event.pressed) {
+        calc_modetoggle();
       }
       return false;
       break;

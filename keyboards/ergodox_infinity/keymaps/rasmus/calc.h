@@ -7,3 +7,4 @@ void calc_add(void);
 void calc_divide(void);
 void calc_multiply(void);
 void calc_subtract(void);
+void calc_modetoggle(void);

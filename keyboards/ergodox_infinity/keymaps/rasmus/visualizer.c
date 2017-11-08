@@ -36,6 +36,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "string.h"
 #include "chprintf.h"
 
+typedef enum {
+  DEC,
+  HEX,
+  OCT,
+  NUM_CALC_MODES,
+} calc_mode;
+
+static calc_mode cmode = DEC;
 
 typedef enum {
     LCD_STATE_INITIAL,
@@ -48,10 +56,12 @@ static lcd_state_t lcd_state = LCD_STATE_INITIAL;
 #define STACK_SIZE 4
 
 typedef struct {
+  calc_mode mode;
   double stack[STACK_SIZE];
 } visualizer_user_data_t;
 
 static visualizer_user_data_t user_data_keyboard = {
+  .mode = 0,
   .stack = {0}
 };
 
@@ -152,13 +162,26 @@ bool draw_calc(keyframe_animation_t* animation, visualizer_state_t* state) {
     gdispClear(White);
 
     char output1[20];
-    chsnprintf(output1, 20, "1: %.5f\0", user_data_keyboard.stack[0]);
     char output2[20];
-    chsnprintf(output2, 20, "2: %.5f\0", user_data_keyboard.stack[1]);
     char output3[20];
-    chsnprintf(output3, 20, "3: %.5f\0", user_data_keyboard.stack[2]);
     char output4[20];
-    chsnprintf(output4, 20, "4: %.5f\0", user_data_keyboard.stack[3]);
+
+    if (cmode == DEC) {
+      chsnprintf(output1, 20, "1: %.5f\0", user_data_keyboard.stack[0]);
+      chsnprintf(output2, 20, "2: %.5f\0", user_data_keyboard.stack[1]);
+      chsnprintf(output3, 20, "3: %.5f\0", user_data_keyboard.stack[2]);
+      chsnprintf(output4, 20, "4: %.5f\0", user_data_keyboard.stack[3]);
+    } else if (cmode == HEX) {
+      chsnprintf(output1, 20, "1: 0x%X\0", (int)user_data_keyboard.stack[0]);
+      chsnprintf(output2, 20, "2: 0x%X\0", (int)user_data_keyboard.stack[1]);
+      chsnprintf(output3, 20, "3: 0x%X\0", (int)user_data_keyboard.stack[2]);
+      chsnprintf(output4, 20, "4: 0x%X\0", (int)user_data_keyboard.stack[3]);
+    } else if (cmode == OCT) {
+      chsnprintf(output1, 20, "1: %o\0", (int)user_data_keyboard.stack[0]);
+      chsnprintf(output2, 20, "2: %o\0", (int)user_data_keyboard.stack[1]);
+      chsnprintf(output3, 20, "3: %o\0", (int)user_data_keyboard.stack[2]);
+      chsnprintf(output4, 20, "4: %o\0", (int)user_data_keyboard.stack[3]);
+    }
 
     gdispDrawString(0, 0, output4, state->font_fixed5x8, Black);
     gdispDrawString(0, 8, output3, state->font_fixed5x8, Black);
@@ -174,6 +197,15 @@ static keyframe_animation_t show_calc = {
     .frame_lengths = {0},
     .frame_functions = {draw_calc},
 };
+
+void calc_modetoggle(void) {
+  cmode = (cmode + 1) % NUM_CALC_MODES;
+  user_data_keyboard.mode = cmode;
+  visualizer_set_user_data(&user_data_keyboard);
+
+  lcd_state = LCD_STATE_CALC;
+  start_keyframe_animation(&show_calc);
+}
 
 double stack[STACK_SIZE];
 
