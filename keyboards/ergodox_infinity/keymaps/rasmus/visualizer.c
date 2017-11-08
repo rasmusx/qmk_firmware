@@ -177,10 +177,10 @@ bool draw_calc(keyframe_animation_t* animation, visualizer_state_t* state) {
       chsnprintf(output3, 20, "3: 0x%X\0", (int)user_data_keyboard.stack[2]);
       chsnprintf(output4, 20, "4: 0x%X\0", (int)user_data_keyboard.stack[3]);
     } else if (cmode == OCT) {
-      chsnprintf(output1, 20, "1: %o\0", (int)user_data_keyboard.stack[0]);
-      chsnprintf(output2, 20, "2: %o\0", (int)user_data_keyboard.stack[1]);
-      chsnprintf(output3, 20, "3: %o\0", (int)user_data_keyboard.stack[2]);
-      chsnprintf(output4, 20, "4: %o\0", (int)user_data_keyboard.stack[3]);
+      chsnprintf(output1, 20, "1: 0%o\0", (int)user_data_keyboard.stack[0]);
+      chsnprintf(output2, 20, "2: 0%o\0", (int)user_data_keyboard.stack[1]);
+      chsnprintf(output3, 20, "3: 0%o\0", (int)user_data_keyboard.stack[2]);
+      chsnprintf(output4, 20, "4: 0%o\0", (int)user_data_keyboard.stack[3]);
     }
 
     gdispDrawString(0, 0, output4, state->font_fixed5x8, Black);
