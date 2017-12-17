@@ -28,8 +28,8 @@
 #ifndef _CHCONF_H_
 #define _CHCONF_H_
 
-#define CHPRINTF_USE_FLOAT				TRUE
 
+#define CHPRINTF_USE_FLOAT				TRUE
 
 #define _CHIBIOS_RT_CONF_
 
