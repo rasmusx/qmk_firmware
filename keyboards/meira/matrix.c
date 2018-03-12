@@ -75,15 +75,6 @@ static bool read_rows_on_col(matrix_row_t current_matrix[], uint8_t current_col)
 static void unselect_cols(void);
 static void select_col(uint8_t col);
 
-__attribute__ ((weak))
-void matrix_init_quantum(void) {
-    matrix_init_kb();
-}
-
-__attribute__ ((weak))
-void matrix_scan_quantum(void) {
-    matrix_scan_kb();
-}
 
 __attribute__ ((weak))
 void matrix_init_kb(void) {
@@ -169,19 +160,6 @@ uint8_t matrix_scan(void)
 {
 	uint8_t ret = _matrix_scan();
 	matrix_scan_quantum();
-//	// HACK backlighting
-//	for (uint8_t t = 0; t < meira_get_backlight_level(); t++) {
-//		for (uint8_t x = 0; x < 13; x++) {
-//			for (uint8_t y = 0; y < 4; y++) {
-//				uint8_t pin = lcol_pins[y];
-//				if ((x >> y) & 1) {
-//					_SFR_IO8((pin >> 4) + 2) |=  _BV(pin & 0xF); // HI
-//				} else {
-//					_SFR_IO8((pin >> 4) + 2) &=  ~_BV(pin & 0xF); // LO
-//				}
-//			}
-//		}
-//	}
 	return ret;
 }
 
@@ -229,21 +207,9 @@ static void init_rows(void)
         uint8_t pin = row_pins[x];
         _SFR_IO8((pin >> 4) + 1) &= ~_BV(pin & 0xF); // IN
         _SFR_IO8((pin >> 4) + 2) |=  _BV(pin & 0xF); // HI
-//        // HACK backlighting
-//        uint8_t lpin = lrow_pins[x];
-//        _SFR_IO8((lpin >> 4) + 1) |= _BV(lpin & 0xF); // OUT
-//        _SFR_IO8((lpin >> 4) + 2) |=  _BV(lpin & 0xF); // HI
     }
 }
 
-//static void init_lcols(void)
-//{
-//	for (uint8_t x = 0; x < 4; x++) {
-//		uint8_t pin = lcol_pins[x];
-//		_SFR_IO8((pin >> 4) + 1) |= _BV(pin & 0xF); // OUT
-//		_SFR_IO8((pin >> 4) + 2) |= _BV(pin & 0xF); // HIGH
-//	}
-//}
 
 static bool read_rows_on_col(matrix_row_t current_matrix[], uint8_t current_col)
 {
