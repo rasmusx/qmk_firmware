@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "i2c.h"
 
 #ifndef DEBOUNCE
-#   define DEBOUNCE 0
+#   define DEBOUNCE 5
 #endif
 static uint8_t debouncing = DEBOUNCE;
 
