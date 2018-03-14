@@ -64,3 +64,5 @@ CUSTOM_MATRIX = yes
 SRC +=	matrix.c \
 		actuation_point.c \
 		i2c.c
+
+LAYOUTS = 66_ansi
