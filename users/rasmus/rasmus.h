@@ -1,0 +1,60 @@
+#ifndef USERSPACE
+#define USERSPACE
+
+#include "quantum.h"
+
+// Define all of
+enum custom_keycodes {
+  KC_SHRG = SAFE_RANGE,
+  NEW_SAFE_RANGE  //use "NEW_SAFE_RANGE" for keymap specific codes
+};
+
+/**
+#define _D SS_DOWN
+#define _U SS_UP
+#define _T SS_TAP
+
+#define TYPE_SHRUG \
+  _D(X_LCTRL) _D(X_LSHIFT) _T(X_U) _U(X_LCTRL) _U(X_LSHIFT) \
+  _T(X_0) _T(X_0) _T(X_A) _T(X_F) \
+  _D(X_LCTRL) _D(X_LSHIFT) _T(X_U) _U(X_LCTRL) _U(X_LSHIFT) \
+  _T(X_0) _T(X_0) _T(X_5) _T(X_C) \
+  _D(X_LCTRL) _D(X_LSHIFT) _T(X_U) _U(X_LCTRL) _U(X_LSHIFT) \
+  _T(X_0) _T(X_0) _T(X_5) _T(X_F) \
+  _D(X_LCTRL) _D(X_LSHIFT) _T(X_U) _U(X_LCTRL) _U(X_LSHIFT) \
+  _T(X_0) _T(X_0) _T(X_2) _T(X_8) \
+  _D(X_LCTRL) _D(X_LSHIFT) _T(X_U) _U(X_LCTRL) _U(X_LSHIFT) \
+  _T(X_3) _T(X_0) _T(X_C) _T(X_4) \
+  _D(X_LCTRL) _D(X_LSHIFT) _T(X_U) _U(X_LCTRL) _U(X_LSHIFT) \
+  _T(X_0) _T(X_0) _T(X_2) _T(X_9) \
+  _D(X_LCTRL) _D(X_LSHIFT) _T(X_U) _U(X_LCTRL) _U(X_LSHIFT) \
+  _T(X_0) _T(X_0) _T(X_5) _T(X_F) \
+  _D(X_LCTRL) _D(X_LSHIFT) _T(X_U) _U(X_LCTRL) _U(X_LSHIFT) \
+  _T(X_0) _T(X_0) _T(X_2) _T(X_F) \
+  _D(X_LCTRL) _D(X_LSHIFT) _T(X_U) _U(X_LCTRL) _U(X_LSHIFT) \
+  _T(X_0) _T(X_0) _T(X_A) _T(X_F) \
+  _T(X_SPACE)
+  */
+
+#define TYPE_SHRUG \
+  SS_DOWN(X_LCTRL) SS_DOWN(X_LSHIFT) SS_TAP(X_U) SS_UP(X_LCTRL) SS_UP(X_LSHIFT) \
+  SS_TAP(X_0) SS_TAP(X_0) SS_TAP(X_A) SS_TAP(X_F) \
+  SS_DOWN(X_LCTRL) SS_DOWN(X_LSHIFT) SS_TAP(X_U) SS_UP(X_LCTRL) SS_UP(X_LSHIFT) \
+  SS_TAP(X_0) SS_TAP(X_0) SS_TAP(X_5) SS_TAP(X_C) \
+  SS_DOWN(X_LCTRL) SS_DOWN(X_LSHIFT) SS_TAP(X_U) SS_UP(X_LCTRL) SS_UP(X_LSHIFT) \
+  SS_TAP(X_0) SS_TAP(X_0) SS_TAP(X_5) SS_TAP(X_F) \
+  SS_DOWN(X_LCTRL) SS_DOWN(X_LSHIFT) SS_TAP(X_U) SS_UP(X_LCTRL) SS_UP(X_LSHIFT) \
+  SS_TAP(X_0) SS_TAP(X_0) SS_TAP(X_2) SS_TAP(X_8) \
+  SS_DOWN(X_LCTRL) SS_DOWN(X_LSHIFT) SS_TAP(X_U) SS_UP(X_LCTRL) SS_UP(X_LSHIFT) \
+  SS_TAP(X_3) SS_TAP(X_0) SS_TAP(X_C) SS_TAP(X_4) \
+  SS_DOWN(X_LCTRL) SS_DOWN(X_LSHIFT) SS_TAP(X_U) SS_UP(X_LCTRL) SS_UP(X_LSHIFT) \
+  SS_TAP(X_0) SS_TAP(X_0) SS_TAP(X_2) SS_TAP(X_9) \
+  SS_DOWN(X_LCTRL) SS_DOWN(X_LSHIFT) SS_TAP(X_U) SS_UP(X_LCTRL) SS_UP(X_LSHIFT) \
+  SS_TAP(X_0) SS_TAP(X_0) SS_TAP(X_5) SS_TAP(X_F) \
+  SS_DOWN(X_LCTRL) SS_DOWN(X_LSHIFT) SS_TAP(X_U) SS_UP(X_LCTRL) SS_UP(X_LSHIFT) \
+  SS_TAP(X_0) SS_TAP(X_0) SS_TAP(X_2) SS_TAP(X_F) \
+  SS_DOWN(X_LCTRL) SS_DOWN(X_LSHIFT) SS_TAP(X_U) SS_UP(X_LCTRL) SS_UP(X_LSHIFT) \
+  SS_TAP(X_0) SS_TAP(X_0) SS_TAP(X_A) SS_TAP(X_F) \
+  SS_TAP(X_SPACE)
+
+#endif
