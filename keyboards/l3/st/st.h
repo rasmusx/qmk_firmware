@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef L3_H
-#define L3_H
+#ifndef ST_H
+#define ST_H
 
 #include "quantum.h"
 
@@ -35,7 +35,7 @@
   { KC_##K0A, KC_##K0B, KC_##K0C, KC_NO,    KC_NO,    KC_NO,    KC_##K0G, KC_NO,    KC_NO,    KC_##K0J, KC_##K0K, KC_NO,    KC_##K0M, KC_##K0N, KC_##K0O, KC_##K0P, KC_NO,    KC_NO,    KC_NO,    KC_NO    }  \
 }
 
-#define KEYMAP_66( \
+#define KEYMAP_66_ansi( \
     K4A, K4B, K4C, K4D, K4E, K4F, K4G, K4H, K4I, K4J, K4K, K4L, K4M, K4O,      K4P, \
     K3A, K3B, K3C, K3D, K3E, K3F, K3G, K3H, K3I, K3J, K3K, K3L, K3M, K3N,      K3P, \
     K2A, K2B, K2C, K2D, K2E, K2F, K2G, K2H, K2I, K2J, K2K, K2L,      K2N,           \
@@ -50,7 +50,7 @@
   { K0A, K0B, K0C, NO,    NO,    NO,    K0G, NO,    NO,    K0J, K0K, NO,    K0M, K0N, K0O, K0P, NO,    NO,    NO,    NO    }  \
 }
 
-#define LAYOUT_66_ansi KEYMAP_66
+#define LAYOUT_66_ansi KEYMAP_66_ansi
 
 
 #endif
